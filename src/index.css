@@ -1,0 +1,1206 @@
+/* src/index.css - OnDash Intelligent Vehicle Guide System */
+
+:root {
+  /* OnDash 오로라 & 이리디센트 색상 시스템 (첨부 이미지 스타일) */
+  --ondash-bg-gradient: radial-gradient(at 10% 10%, rgba(219, 234, 254, 0.8) 0px, transparent 50%),
+                        radial-gradient(at 90% 15%, rgba(243, 232, 255, 0.8) 0px, transparent 50%),
+                        radial-gradient(at 50% 50%, rgba(254, 240, 245, 0.7) 0px, transparent 60%),
+                        radial-gradient(at 80% 85%, rgba(224, 242, 254, 0.7) 0px, transparent 50%),
+                        radial-gradient(at 20% 80%, rgba(238, 242, 255, 0.9) 0px, transparent 50%),
+                        #f5f8ff;
+
+  --color-surface-glass: rgba(255, 255, 255, 0.82);
+  --color-surface-solid: #ffffff;
+  --color-surface-translucent: rgba(255, 255, 255, 0.65);
+  
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-tertiary: #64748b;
+  --color-text-subtle: #94a3b8;
+
+  --color-primary-indigo: #4f46e5;
+  --color-primary-sky: #0ea5e9;
+  --color-primary-pill: #0f172a; /* 이미지 3의 딥 블랙 캡슐 */
+
+  --glass-border: 1px solid rgba(255, 255, 255, 0.85);
+  --glass-border-subtle: 1px solid rgba(226, 232, 240, 0.7);
+
+  --shadow-ambient: 0 16px 36px rgba(99, 102, 241, 0.08), 0 4px 12px rgba(15, 23, 42, 0.03);
+  --shadow-card: 0 10px 28px rgba(148, 163, 184, 0.14), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --shadow-floating: 0 20px 45px rgba(15, 23, 42, 0.12), 0 4px 14px rgba(15, 23, 42, 0.04);
+  --shadow-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+
+  --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+/* 모바일 뷰포트 (최대 폭 440px 중앙 배치 + 오로라 배경 + 도트 그리드) */
+.app-viewport {
+  width: 100%;
+  max-width: 440px;
+  height: 100dvh;
+  margin: 0 auto;
+  background: var(--ondash-bg-gradient);
+  background-attachment: fixed;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
+}
+
+/* 첨부 이미지 3 스타일의 은은한 도트 매트릭스 패턴 오버레이 */
+.app-viewport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.22) 1px, transparent 1px);
+  background-size: 18px 18px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+/* 상단 투명 글래스 네비게이션 헤더 */
+.top-nav {
+  height: 58px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: var(--glass-border-subtle);
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.top-nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* OnDash 심미적 오토모티브 브랜드 로고 (칩 컨테이너 제거, 클린 워드마크) */
+.ondash-brand-logo-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ondash-brand-logo-clean:hover {
+  opacity: 0.85;
+}
+
+.ondash-brand-logo-clean:active {
+  transform: scale(0.97);
+}
+
+.ondash-logo-emblem {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+}
+
+.ondash-brand-wordmark-clean {
+  font-size: 16px;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.top-nav-divider {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background: #cbd5e1;
+  margin: 0 6px;
+}
+
+/* 최상단 로고 옆 차량 변경 버튼 (무거운 알약 대신 세련된 미니멀 액션) */
+.top-nav-vehicle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(241, 245, 249, 0.85);
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.top-nav-vehicle-btn:hover {
+  background: #ffffff;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.top-nav-vehicle-btn:active {
+  transform: scale(0.96) translateY(0);
+}
+
+/* 주행/정차 상태 닷 인디케이터 (피로감 주는 알약 대신 감각적인 상태 표시) */
+.mode-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mode-status-indicator:hover {
+  background: rgba(241, 245, 249, 0.7);
+}
+
+.mode-status-indicator:active {
+  transform: scale(0.95);
+}
+
+.mode-status-indicator:hover {
+  background: rgba(15, 23, 42, 0.05);
+}
+
+.mode-status-indicator.parked {
+  color: #475569;
+}
+
+.mode-status-indicator.driving {
+  color: #dc2626;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.parked {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+.status-dot.driving {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+  animation: pulse 1.8s infinite;
+}
+
+/* 새 대화 고스트 버튼 (HomeTab) */
+.home-sub-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-sub-reset-btn:hover {
+  color: #0f172a;
+  background: rgba(241, 245, 249, 0.9);
+}
+
+.home-sub-reset-btn:active {
+  transform: scale(0.95);
+}
+
+.top-nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.glass-icon-btn {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.glass-icon-btn:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.glass-icon-btn:active {
+  transform: scale(0.92);
+}
+
+/* 스크롤 가능한 메인 콘텐츠 */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 18px calc(62px + env(safe-area-inset-bottom, 0px)); /* 바텀 고정 탭바 여백 */
+  position: relative;
+  z-index: 10;
+}
+
+.content-area.home-tab-active {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+/* 요구사항 2: 바텀 고정 하단 탭바 (플로팅 X) */
+.bottom-tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(56px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 0; /* 바텀 고정 */
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-left: 12px;
+  padding-right: 12px;
+  z-index: 30;
+}
+
+.tab-item {
+  flex: 1;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  border-radius: 12px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tab-item:active {
+  transform: scale(0.95);
+}
+
+.tab-item.active {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
+  font-weight: 700;
+}
+
+/* ========================================================
+   홈 화면 (HomeTab) 스타일 (첨부 이미지 3, 5 감성 융합)
+======================================================== */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 이미지 5 스타일의 프리미엄 차량 카드 배너 */
+.ondash-hero-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 248, 255, 0.85) 100%);
+  border: var(--glass-border);
+  border-radius: 26px;
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+}
+
+.ondash-hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.ondash-vehicle-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ondash-badge-tiny {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6366f1;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.ondash-vehicle-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.5px;
+}
+
+.ondash-vehicle-sub {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 첨부 이미지 5 스타일의 차량 그래픽 캡슐 */
+.ondash-vehicle-pill-banner {
+  margin-top: 16px;
+  background: linear-gradient(90deg, #e0e7ff 0%, #ede9fe 50%, #fce7f3 100%);
+  border-radius: 9999px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.ondash-pill-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #312e81;
+}
+
+.ondash-change-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 9999px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4338ca;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(67, 56, 202, 0.12);
+}
+
+/* 첨부 이미지 1 & 2 스타일의 오로라 상황 카드 */
+.ondash-context-card {
+  border-radius: 24px;
+  padding: 18px;
+  background: var(--color-surface-glass);
+  backdrop-filter: blur(20px);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-ambient);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ondash-context-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8, #f472b6);
+}
+
+.context-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  color: #334155;
+  align-self: flex-start;
+}
+
+.context-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.context-card-desc {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.45;
+}
+
+/* 첨부 이미지 3 스타일의 프롬프트 캡슐 & 질문 제안 */
+.ondash-prompts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ondash-section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ondash-question-pill {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border: var(--glass-border);
+  border-radius: 20px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.08);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ondash-question-pill:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
+  border-color: #cbd5e1;
+}
+
+/* 첨부 이미지 3 & 5 스타일의 플로팅 인풋 바 */
+.ondash-input-floating-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24px);
+  border: var(--glass-border);
+  border-radius: 24px;
+  padding: 16px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s;
+}
+
+.ondash-input-floating-card:focus-within {
+  box-shadow: var(--shadow-floating);
+  border-color: #94a3b8;
+}
+
+.ondash-textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #0f172a;
+  min-height: 60px;
+}
+
+.ondash-input-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ondash-mic-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  color: #334155;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+
+.ondash-mic-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.ondash-mic-btn:active {
+  transform: scale(0.92);
+}
+
+.ondash-mic-btn.listening {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+  animation: pulse-border 1.5s infinite;
+}
+
+/* 첨부 이미지 3의 딥 블랙 액션 원형 버튼 */
+.ondash-send-btn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  flex-shrink: 0;
+}
+
+.ondash-send-btn:hover {
+  transform: scale(1.05);
+  background: #1e293b;
+}
+
+.ondash-send-btn:active {
+  transform: scale(0.92);
+}
+
+.ondash-send-btn:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* 눈 오는 날 & 휴게소 이동 상황 카드 테마 */
+.ondash-context-card.snow-theme {
+  background: linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(245, 243, 255, 0.95) 100%);
+  border: 1px solid rgba(186, 230, 253, 0.85);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.1);
+}
+
+.context-tag-pill.snow {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+/* 음성 읽기 중 펄스 애니메이션 */
+.glass-icon-btn.active-speaking {
+  animation: pulse-speaking 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-speaking {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+  50% { transform: scale(1.08); box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+/* ========================================================
+   질문 / 대화 화면 (ChatTab) 글래스모피즘
+======================================================== */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.chat-context-pill-bar {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  border-radius: 16px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: var(--glass-border-subtle);
+}
+
+/* ========================================================
+   정돈된 단계별 체크리스트 (De-carded Unified Checklist)
+======================================================== */
+.ondash-steps-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.ondash-steps-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.steps-header-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.steps-header-count {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
+
+.ondash-steps-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ondash-step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 4px;
+  border-bottom: 1px solid #f8fafc;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.ondash-step-row:last-child {
+  border-bottom: none;
+}
+
+.ondash-step-row:hover {
+  background: #f8fafc;
+}
+
+.ondash-step-row.active {
+  background: #f8faff;
+  padding: 9px 8px;
+  margin: 0 -4px;
+  border-radius: 10px;
+}
+
+.ondash-step-row.future {
+  opacity: 0.5;
+}
+
+.step-check-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.ondash-step-row.active .step-check-circle {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.ondash-step-row.checked .step-check-circle {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.step-text-wrap {
+  flex: 1;
+  line-height: 1.5;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.step-scope-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  margin-right: 6px;
+}
+
+.ondash-step-row.checked .step-action-desc {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.ondash-step-row.active .step-action-desc {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* 단정하고 미니멀한 서브 링크 버튼 */
+.ondash-escalate-text-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ondash-escalate-text-btn:hover {
+  background: #f8fafc;
+  color: #1e293b;
+  border-color: #94a3b8;
+  border-style: solid;
+}
+
+.ondash-escalate-text-btn:active {
+  transform: scale(0.98);
+}
+
+/* 정돈된 연계 시설 박스 */
+.ondash-facility-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.facility-box-header {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.facility-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.facility-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.facility-title-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.facility-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.facility-dist {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  background: #eff6ff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.facility-addr {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.facility-nav-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  text-decoration: none;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.facility-nav-link:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+/* 추천 질문 가로 스크롤 칩 (수직 적층 카드를 대체하여 90px 절약 & 시각 피로 완화) */
+.ondash-questions-scroll-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 2px 2px 6px 2px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ondash-questions-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.ondash-question-scroll-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  transition: all 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: ondashChipFadeIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ondashChipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ondash-question-scroll-chip:hover {
+  background: #ffffff;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+.ondash-question-scroll-chip:active {
+  transform: scale(0.95) translateY(0);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+/* 사용자 버블 */
+.user-glass-bubble {
+  align-self: flex-end;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 22px 22px 6px 22px;
+  max-width: 84%;
+  font-size: 15px;
+  line-height: 1.45;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
+  animation: ondashBubbleFadeIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ondashBubbleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* AI 답변 카드 (클린 화이트 & 젠틀 섀도우) */
+.ondash-response-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 22px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: ondashCardSlideUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes ondashCardSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 안전 레벨 배지 */
+.safety-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+}
+
+.safety-pill-badge.NORMAL {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.safety-pill-badge.CAUTION {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.safety-pill-badge.IMMEDIATE_ACTION {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* 1. 결론 한 문장 */
+.ondash-summary-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.45;
+  letter-spacing: -0.3px;
+}
+
+.ondash-summary-text.driving-mode {
+  font-size: 21px;
+  line-height: 1.35;
+  color: #0f172a;
+}
+
+/* 2. 다음 행동 한두 가지 */
+.ondash-action-pill-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  border: 1px solid #bae6fd;
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0369a1;
+  line-height: 1.45;
+}
+
+/* 3. 출처 메타 배지 */
+.ondash-meta-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ondash-meta-chip {
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* 하단 대화 입력 바 (플로팅 캡슐) */
+.chat-bottom-input-bar {
+  position: sticky;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: var(--glass-border);
+  border-radius: 9999px;
+  padding: 6px 10px 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-card);
+  margin-top: 10px;
+}
+
+.chat-input-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.chat-send-round-btn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* ========================================================
+   모달 및 바텀 시트 (첨부 이미지 1 스타일)
+======================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+
+.bottom-sheet {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(30px);
+  border-radius: 32px 32px 0 0;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px));
+  max-height: 88dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.sheet-capsule-btn {
+  background: #0ea5e9;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.25);
+}
+
+/* ----------------------------------------------------
+   Research Survey Custom Keyframes & Motion Reduction
+   ---------------------------------------------------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bounceShort {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce-short {
+  animation: bounceShort 0.4s ease-in-out 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
