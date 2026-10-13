@@ -1,11 +1,13 @@
-# 🚀 OnDash & OnDash-Survey 완전 신규 구축을 위한 아이데이션 & 블루프린트 명세서
+# 🚀 OnDash & OnDash-Survey 통합 구축 및 Firebase 원큐 배포 명세서 (Project Blueprint)
 
 > **🚨 다음 LLM을 위한 절대 명령 (Zero-Base Directive)**
-> 1. **기존 코드를 이어붙이거나 재활용하지 마십시오.**  
-> 2. **GitHub 저장소도, 코드도 완전 처음부터(Zero-Base, From Scratch) 새 판을 짜십시오.**  
-> 3. **실서비스(OnDash)와 설문(Survey)은 폴더 구조부터 완전히 격리된 '서로 다른 별개의 두 프로젝트'입니다.**  
->    * 설문은 실서비스 내부에 섞지 말고, **완전히 독립된 별도의 설문 전용 페이지(프로젝트)**로 구축하십시오.
-> 4. 본 문서는 기술적 지엽성보다 **서비스 기획 의도, 아이데이션, UX 철학, 문제 정의**를 중심으로 기술되었습니다. 이를 바탕으로 가장 모던하고 깔끔한 코드로 새 판을 구현하십시오.
+> 1. **기존 코드를 덕지덕지 패치하지 말고, 백지 상태(Zero-Base, From Scratch)에서 완전히 새 판을 짜십시오.**
+> 2. **배포는 Firebase Hosting으로 '원큐에 한 방 배포'되도록 단일 프로젝트로 구성하십시오.**
+> 3. **대신, `src/` 내부에서는 두 도메인(실서비스와 설문)을 폴더 단위로 완벽히 격리하십시오.**
+>    * `src/ondash/`: 실서비스 전용 (설문 코드에 대한 의존성 0%)
+>    * `src/survey/`: 설문 전용 (실서비스 코드에 대한 의존성 0%)
+>    * `src/Router.jsx`: URL 경로(`path`)에 따라 깔끔하게 분기만 담당
+> 4. 본 문서는 기술적 지엽성보다 **서비스 기획 의도, 아이데이션, UX 철학, 문제 정의**를 중심으로 기술되었습니다.
 
 ---
 
@@ -28,11 +30,10 @@
    * 실제 GPS나 센서에 연동하지 않고, 통제된 **가상 상황 카드(S1~S6)**를 기반으로 동작합니다.
    * 같은 상황에서 **[우리 서비스 (OnDash) vs ChatGPT vs Gemini]** 세 시스템의 답변을 나란히 비교하여, 어느 서비스가 더 안전하고 정확한지 사용자가 직접 체감하고 비교할 수 있습니다.
 
-### 1.3 설문 플랫폼(OnDash-Survey)의 분리 기획 의도
-* **실서비스와 설문은 목적, 사용자, 수명 주기가 완전히 다릅니다.**
-  * **실서비스**: 차량 운전자/테스터가 실제 사용하는 인포테인먼트형 AI 가이드.
-  * **설문 플랫폼**: UT 피험자가 3자 답변을 블라인드로 평가하고 연구 데이터를 축적하는 학술/리서치 페이지.
-* 과거처럼 한 프로젝트에 둘을 억지로 합쳐두면 라우팅과 코드가 꼬이므로, **폴더 구조도, 깃허브도, 배포 링크도 아예 다른 별개의 독립 서비스**로 만들어야 합니다.
+### 1.3 설문(OnDash-Survey)의 기획 의도
+* **독립된 평가 및 연구 수집 플랫폼**:
+  * UT 참가자가 3개 AI의 답변을 검토한 후, 답변의 신뢰도, 위험 회피성, 정보 유용성을 블라인드/객관적으로 평가할 수 있는 전문 설문 플랫폼입니다.
+  * 실서비스와 같은 프로젝트 안에 공존하지만, **코드적으로는 완전히 격리된 폴더(`src/survey/`)에 위치**하여 실서비스 로직을 전혀 오염시키지 않습니다.
 
 ---
 
@@ -58,44 +59,93 @@
 
 ---
 
-## 🗂️ 3. 폴더 구조 & 아키텍처 새 판 짜기 (Folder Blueprint)
+## 🗂️ 3. 폴더 구조 & 아키텍처 (Clean Domain Isolation)
 
-다음 LLM은 기존 폴더를 짜깁기하지 말고, 완전히 독립된 2개의 루트를 만들어 각각 새 Git으로 구성하십시오.
+단일 프로젝트 내에서 **도메인별 폴더 격리**를 적용하여 코드가 절대 섞이지 않게 합니다:
 
 ```
-📁 workspace/
+📁 project-root/
 │
-├── 📁 ondash-app/                # [플랫폼 1: 실서비스] - 완전 독립 프로젝트
-│   ├── .git/                     # 독립 Git (https://github.com/eeyunjung/OnDash)
-│   ├── index.html                # 타이틀: OnDash - 내 차 가이드 AI
-│   ├── package.json              # "name": "ondash"
-│   ├── server/                   # Node.js 백엔드 (SQLite 매뉴얼 지식 DB + RAG 오케스트레이터)
-│   │   ├── index.js
-│   │   ├── db.js
-│   │   ├── rag.js
-│   │   └── orchestrator.js
-│   └── src/                      # 프론트엔드 (React 18 + Vite)
-│       ├── main.jsx              # 순수 App.jsx 마운트 (설문 라우터 일체 없음)
-│       ├── App.jsx               # 메인 컨테이너 (Home, History, MyPage)
-│       └── components/           # 홈, 시나리오 전환 모달, 3자 비교 모달, 채팅
+├── 📄 firebase.json               # Firebase Hosting SPA 리라이트 설정
+├── 📄 package.json                # 통합 Vite + React 빌드 스크립트
+├── 📄 vite.config.js
+├── 📄 index.html                  # 단일 진입점
+├── 📄 ONDASH_NEW_PROJECT_IDEATION_AND_BLUEPRINT.md # 본 기획 명세서
 │
-└── 📁 ondash-survey/             # [플랫폼 2: 설문 페이지] - 완전 독립 프로젝트
-    ├── .git/                     # 독립 Git (예: https://github.com/eeyunjung/OnDash-Survey)
-    ├── index.html                # 타이틀: 차량 AI 답변 비교 연구 설문
-    ├── package.json              # "name": "ondash-survey"
-    ├── vite.config.js
-    └── src/                      # 순수 설문 SPA (React 18 + Vite)
-        ├── main.jsx              # 설문 전용 라우터
-        ├── SurveyApp.jsx         # 8단계 설문 스텝 제어
-        ├── steps/                # 동의, 스크리너, 배경, 비교 평가, 사후 설문 등
-        ├── admin/                # 연구자 관리 콘솔 (/admin: 통계, CSV 다운로드)
-        ├── questionsBank.js      # 문항 편향 방지 균형 할당
-        └── storageService.js     # Supabase REST / localStorage 하이브리드 저장소
+└── 📁 src/
+    ├── 📄 main.jsx                # React 마운트 진입점
+    │
+    ├── 📄 Router.jsx              # [초경량 URL 라우터] (단 20줄)
+    │                              #   - '/'       👉 ondash/App.jsx (실서비스)
+    │                              #   - '/survey' 👉 survey/SurveyApp.jsx (설문)
+    │                              #   - '/admin'  👉 survey/admin/SurveyAdmin.jsx (관리자)
+    │
+    ├── 📁 ondash/                 # 🚗 [도메인 1: OnDash 실서비스]
+    │   ├── App.jsx                # 실서비스 메인 뷰 (Home, History, MyPage)
+    │   ├── components/            # 실서비스 컴포넌트 (홈, 시나리오 모달, 3자 비교 모달, 채팅)
+    │   ├── services/              # 아이오닉 5 매뉴얼 지식 & RAG 오케스트레이터 로직
+    │   └── styles/                # 실서비스 전용 스타일
+    │
+    └── 📁 survey/                 # 📊 [도메인 2: OnDash-Survey 설문 플랫폼]
+        ├── SurveyApp.jsx          # 설문 메인 뷰 (8단계 스텝 오케스트레이션)
+        ├── steps/                 # 설문 단계들 (동의, 스크리너, 배경, 비교 평가, 사후 설문 등)
+        ├── admin/                 # 연구자 관리 콘솔 (/admin: 통계, CSV 내보내기)
+        ├── questionsBank.js       # 문항 은행 및 편향 방지 균형 할당
+        └── storageService.js      # Supabase REST / localStorage 하이브리드 저장소
 ```
 
 ---
 
-## 🛡️ 4. 답변 구성 표준 템플릿 (Prompt & Response Spec)
+## 🌐 4. URL 라우팅 및 단일 도메인 구조
+
+Firebase Hosting 배포 시 참가자와 연구자가 접속할 단일 도메인 URL 구조입니다:
+
+| URL 경로 | 렌더링 컴포넌트 | 대상 사용자 | 설명 |
+| :--- | :--- | :--- | :--- |
+| **`https://<project-id>.web.app/`** | `src/ondash/App.jsx` | 운전자 / UT 참가자 | **OnDash 실서비스** (차량 상황 AI 가이드 & 3자 답변 비교) |
+| **`https://<project-id>.web.app/survey`** | `src/survey/SurveyApp.jsx` | UT 설문 참가자 | **연구 설문 페이지** (블라인드 평가 및 피험자 설문) |
+| **`https://<project-id>.web.app/admin`** | `src/survey/admin/SurveyAdmin.jsx` | 연구원 / 관리자 | **설문 관리자 대시보드** (결과 통계, CSV 다운로드) |
+
+---
+
+## 🔥 5. Firebase Hosting 원큐 배포 설정 (`firebase.json`)
+
+Vite SPA에서 `/survey`나 `/admin` 서브 경로로 직접 접속하거나 새로고침해도 404가 뜨지 않도록 `firebase.json`을 구성합니다:
+
+```json
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+### 배포 명령어 (원큐)
+```bash
+# 1. 의존성 설치
+npm install
+
+# 2. 프로덕션 빌드 (dist 생성)
+npm run build
+
+# 3. Firebase 단 한 줄 배포!
+firebase deploy --only hosting
+```
+
+---
+
+## 🛡️ 6. 답변 구성 표준 템플릿 (Prompt & Response Spec)
 
 우리 서비스(OnDash) 답변 생성 시 반드시 지켜야 하는 7단계 표준 구조입니다:
 
@@ -109,19 +159,23 @@
 
 ---
 
-## 🚀 5. 다음 LLM을 위한 새 판 구현 로드맵 (Action Steps)
+## 🚀 7. 다음 LLM을 위한 새 판 구현 로드맵 (Action Steps)
 
-1. **새 프로젝트 1: OnDash 실서비스 새 판 짜기**
-   - 새 디렉토리(`ondash-app`) 생성.
-   - Node 22 기반 백엔드 + React 18 프론트엔드로 처음부터 깨끗하게 작성.
-   - 2025 아이오닉 5 매뉴얼 지식 DB 구축 및 3자 비교 오케스트레이터 작성.
-   - 상단 헤더 시나리오 전환, 예상 질문 동적 위치, 부드러운 애니메이션 구현.
-   - GitHub `eeyunjung/OnDash`에 initial commit으로 푸시.
+1. **프로젝트 셋업**:
+   * 깨끗한 Vite + React 프로젝트 초기화
+   * `firebase.json` 생성 (`rewrites` 설정)
+2. **라우터 구성 (`src/Router.jsx`)**:
+   * URL `window.location.pathname`에 따라 `/`는 `ondash/App`, `/survey`는 `survey/SurveyApp`, `/admin`은 `survey/admin/SurveyAdmin`으로 깔끔히 분기.
+3. **`src/ondash/` 실서비스 구현**:
+   * 2025 아이오닉 5 공식 매뉴얼 RAG 지식 및 3자 비교 로직
+   * 상단 헤더 시나리오 전환 모달
+   * 예상 질문 위치 로직 (질문 전 홈 중앙 / 질문 후 채팅창 위)
+   * 400~500ms 부드러운 애니메이션 및 슬레이트톤 시각 위계
+4. **`src/survey/` 설문 플랫폼 구현**:
+   * 8단계 설문 플로우 (동의 → 스크리너 → 배경 → 비교평가 → 사후설문 → 완료)
+   * 문항 균형 할당 및 Supabase / localStorage 하이브리드 스토리지
+   * `/admin` 대시보드 및 CSV 내보내기
+5. **배포**:
+   * `npm run build && firebase deploy`로 한 방에 배포 완료!
 
-2. **새 프로젝트 2: OnDash-Survey 설문 페이지 새 판 짜기**
-   - 새 디렉토리(`ondash-survey`) 생성.
-   - 실서비스와 전혀 상관없는 순수 독립 Vite SPA로 작성.
-   - 8단계 설문 플로우 및 `/admin` 관리자 대시보드 구현.
-   - GitHub `eeyunjung/OnDash-Survey` 새 레포 생성 후 독립 푸시.
-
-**이 문서를 읽은 다음 LLM은 과감하게 옛것을 버리고, 가장 아름답고 완성도 높은 두 개의 독립 플랫폼을 백지 상태에서 새로 구축하십시오.**
+**이 문서를 읽은 다음 LLM은 옛날 코드를 건드리지 말고, 위 구조에 맞춰 백지 상태에서 가장 모던하고 깔끔한 코드로 프로젝트를 완성하십시오.**
